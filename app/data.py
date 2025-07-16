@@ -80,6 +80,37 @@ def cat_1970s_yearly_agg():
     except Exception as e:
         return f"An error occurred while generating the plot: {e}"
 
+@app.route('/cat_2000s_yearly_agg')
+def cat_1980s_1990s_yearly_agg():
+    try:
+        # Ensure 'Date' is datetime and extract year
+        df = df_2000s.copy()
+        df['Year'] = df['Date'].dt.year
+
+        # Group by year and calculate average of OHLC
+        yearly_avg = df.groupby('Year')[['Open', 'High', 'Low', 'Close']].mean()
+
+        # Plot
+        plt.figure(figsize=(12, 6))
+        for col in ['Open', 'High', 'Low', 'Close']:
+            plt.plot(yearly_avg.index, yearly_avg[col], marker='o', label=col)
+
+        plt.title("Caterpillar Inc. (CAT) — Yearly Average OHLC (2000s)", fontsize=16)
+        plt.xlabel("Year", fontsize=12)
+        plt.ylabel("Average Price", fontsize=12)
+        plt.legend()
+        plt.grid(True)
+
+        # Stream plot to PNG response
+        buf = io.BytesIO()
+        plt.savefig(buf, format='png')
+        buf.seek(0)
+        plt.close()
+        return Response(buf, mimetype='image/png')
+
+    except Exception as e:
+        return f"An error occurred while generating the plot: {e}"
+    
 @app.route('/cat_1980s-1990s_yearly_agg')
 def cat_1980s_1990s_yearly_agg():
     try:

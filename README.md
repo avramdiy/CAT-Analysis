@@ -30,4 +30,8 @@
 
 ### 4th Commit
 
+- Create a visualization showing the yearly aggregate of Open, High, Low, Close, using df_80s_90s
+
 ### 5th Commit
+
+- Create a visualization showing the yearly aggregate of Open, High, Low, Close, using df_2000s
