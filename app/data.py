@@ -1,5 +1,7 @@
-from flask import Flask, render_template_string
+from flask import Flask, render_template_string, Response
 import pandas as pd
+import matplotlib.pyplot as plt
+import io
 
 app = Flask(__name__)
 
@@ -46,6 +48,37 @@ def show_80s_90s():
 @app.route('/cat_2000s')
 def show_2000s():
     return render_html("Caterpillar Inc. (CAT) - 2000 to 2017", df_2000s)
+
+@app.route('/cat_1970s_yearly_agg')
+def cat_1970s_yearly_agg():
+    try:
+        # Ensure 'Date' is datetime and extract year
+        df = df_70s.copy()
+        df['Year'] = df['Date'].dt.year
+
+        # Group by year and calculate average of OHLC
+        yearly_avg = df.groupby('Year')[['Open', 'High', 'Low', 'Close']].mean()
+
+        # Plot
+        plt.figure(figsize=(12, 6))
+        for col in ['Open', 'High', 'Low', 'Close']:
+            plt.plot(yearly_avg.index, yearly_avg[col], marker='o', label=col)
+
+        plt.title("Caterpillar Inc. (CAT) — Yearly Average OHLC (1970s)", fontsize=16)
+        plt.xlabel("Year", fontsize=12)
+        plt.ylabel("Average Price", fontsize=12)
+        plt.legend()
+        plt.grid(True)
+
+        # Stream plot to PNG response
+        buf = io.BytesIO()
+        plt.savefig(buf, format='png')
+        buf.seek(0)
+        plt.close()
+        return Response(buf, mimetype='image/png')
+
+    except Exception as e:
+        return f"An error occurred while generating the plot: {e}"
 
 if __name__ == '__main__':
     app.run(debug=True)

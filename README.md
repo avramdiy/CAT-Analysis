@@ -26,6 +26,8 @@
 
 ### 3rd Commit
 
+- Create a visualization showing the yearly aggregate of Open, High, Low, Close, using df_70s
+
 ### 4th Commit
 
 ### 5th Commit
